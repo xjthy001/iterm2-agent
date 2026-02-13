@@ -13,12 +13,33 @@ Read the screen, run commands, send keystrokes, monitor output, and manage panes
 
 ## Install
 
+### MCP Server
+
 ```bash
 git clone git@github.com:xjthy001/iterm2-agent.git
 cd iterm2-agent
 uv venv
 uv pip install -e .
 ```
+
+Then register it in `~/.claude.json` (see [Usage with Claude Code](#usage-with-claude-code) below).
+
+### Skill (optional)
+
+Install the agent skill via [skills.sh](https://skills.sh):
+
+```bash
+npx skills add xjthy001/iterm2-agent
+```
+
+Or manually:
+
+```bash
+mkdir -p ~/.claude/skills/iterm2
+cp skills/iterm2/SKILL.md ~/.claude/skills/iterm2/SKILL.md
+```
+
+The skill gives your AI agent a reference guide for using the 6 tools effectively. It auto-activates when you mention iTerm2 or terminal control.
 
 ## Tools
 
@@ -132,16 +153,20 @@ Replace `/path/to/iterm2-agent` with your actual clone path. The command must po
 
 Restart Claude Code after editing. The server connects to iTerm2 on startup — make sure iTerm2 is running and the Python API is enabled.
 
-### 2. Install the Claude Code skill (optional)
+### 2. Install the skill (optional)
 
-The skill gives Claude a built-in reference for how to use the 6 tools effectively:
+```bash
+npx skills add xjthy001/iterm2-agent
+```
+
+Or manually copy from the repo:
 
 ```bash
 mkdir -p ~/.claude/skills/iterm2
-cp skill/SKILL.md ~/.claude/skills/iterm2/SKILL.md
+cp skills/iterm2/SKILL.md ~/.claude/skills/iterm2/SKILL.md
 ```
 
-After installing, you can invoke it with `/iterm2` or it auto-activates when you mention terminal/iTerm2.
+After installing, invoke it with `/iterm2` or it auto-activates when you mention terminal/iTerm2.
 
 ### 3. Verify
 
@@ -213,8 +238,8 @@ iterm2-agent/
 │   ├── test_run_command.py   # Security integration tests
 │   └── test_send_control.py  # Control character mapping tests
 ├── test_integration.py       # Live integration tests (requires iTerm2)
-└── skill/
-    └── SKILL.md              # Claude Code skill definition
+└── skills/iterm2/
+    └── SKILL.md              # Agent skill definition (skills.sh compatible)
 ```
 
 ## Testing

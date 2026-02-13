@@ -1,12 +1,19 @@
 ---
 name: iterm2
-description: Control iTerm2 terminal sessions — run commands, interact with TUIs, monitor output, manage panes. Auto-invoked when user mentions terminal, iTerm2, pane, or session control.
-user_invocable: true
+description: Control iTerm2 terminal sessions — read the screen, run commands, send keystrokes, interact with TUIs, monitor output, and manage panes. Use when the user mentions iTerm2, terminal control, split pane, read screen, send keys, or session management. Triggers on "what's on my terminal", "run this in iTerm", "split the terminal", "stop the process", "monitor the output".
+license: MIT
+metadata:
+  author: xjthy001
+  version: "0.1.0"
 ---
 
 # iTerm2 Terminal Control
 
 Control iTerm2 sessions via the `iterm2-agent` MCP server. All tool names are prefixed with `mcp__iterm2-agent__`.
+
+## Prerequisites
+
+This skill requires the `iterm2-agent` MCP server to be installed and registered. See the [README](https://github.com/xjthy001/iterm2-agent) for setup instructions.
 
 ## Core Principle: Read Before You Act
 
