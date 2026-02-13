@@ -1,5 +1,5 @@
 ---
-name: iterm2
+name: iterm2-agent
 description: Control iTerm2 terminal sessions — read the screen, run commands, send keystrokes, interact with TUIs, monitor output, and manage panes. Use when the user mentions iTerm2, terminal control, split pane, read screen, send keys, or session management. Triggers on "what's on my terminal", "run this in iTerm", "split the terminal", "stop the process", "monitor the output".
 license: MIT
 metadata:

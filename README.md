@@ -35,8 +35,8 @@ npx skills add xjthy001/iterm2-agent
 Or manually:
 
 ```bash
-mkdir -p ~/.claude/skills/iterm2
-cp skills/iterm2/SKILL.md ~/.claude/skills/iterm2/SKILL.md
+mkdir -p ~/.claude/skills/iterm2-agent
+cp skills/iterm2-agent/SKILL.md ~/.claude/skills/iterm2-agent/SKILL.md
 ```
 
 The skill gives your AI agent a reference guide for using the 6 tools effectively. It auto-activates when you mention iTerm2 or terminal control.
@@ -162,11 +162,11 @@ npx skills add xjthy001/iterm2-agent
 Or manually copy from the repo:
 
 ```bash
-mkdir -p ~/.claude/skills/iterm2
-cp skills/iterm2/SKILL.md ~/.claude/skills/iterm2/SKILL.md
+mkdir -p ~/.claude/skills/iterm2-agent
+cp skills/iterm2-agent/SKILL.md ~/.claude/skills/iterm2-agent/SKILL.md
 ```
 
-After installing, invoke it with `/iterm2` or it auto-activates when you mention terminal/iTerm2.
+After installing, invoke it with `/iterm2-agent` or it auto-activates when you mention terminal/iTerm2.
 
 ### 3. Verify
 
@@ -238,7 +238,7 @@ iterm2-agent/
 │   ├── test_run_command.py   # Security integration tests
 │   └── test_send_control.py  # Control character mapping tests
 ├── test_integration.py       # Live integration tests (requires iTerm2)
-└── skills/iterm2/
+└── skills/iterm2-agent/
     └── SKILL.md              # Agent skill definition (skills.sh compatible)
 ```
 
