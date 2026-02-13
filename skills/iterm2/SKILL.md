@@ -13,7 +13,12 @@ Control iTerm2 sessions via the `iterm2-agent` MCP server. All tool names are pr
 
 ## Prerequisites
 
-This skill requires the `iterm2-agent` MCP server to be installed and registered. See the [README](https://github.com/xjthy001/iterm2-agent) for setup instructions.
+Before using any tool, verify both conditions are met:
+
+1. **iTerm2 must be running** with at least one open window. The Python API must be enabled: **Preferences → General → Magic → Enable Python API**.
+2. **The `iterm2-agent` MCP server must be installed and registered** in `~/.claude.json`. See the [README](https://github.com/xjthy001/iterm2-agent) for setup.
+
+If a tool call fails with a connection error, ask the user to check that iTerm2 is open and the MCP server is configured.
 
 ## Core Principle: Read Before You Act
 
