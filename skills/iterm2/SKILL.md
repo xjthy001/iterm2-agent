@@ -87,6 +87,57 @@ ALWAYS call `read_screen()` before taking action. This tells you:
 | Stop a running process | `send_control(character="C")` | Sends Ctrl+C interrupt. |
 | Multi-pane workflow | `manage_session(action="split")` then target panes by session_id | Split first, then run commands in specific panes. |
 
+## Special Keys Reference
+
+Keys sent via `send_control`:
+
+| Key | `character` value | Action |
+|-----|-------------------|--------|
+| Ctrl+C | `C` | Interrupt process |
+| Ctrl+Z | `Z` | Suspend process |
+| Ctrl+D | `D` | EOF / exit shell |
+| Ctrl+L | `L` | Clear screen |
+| Escape | `ESCAPE` | Escape key |
+| Ctrl+A | `A` | Beginning of line |
+| Ctrl+E | `E` | End of line |
+| Ctrl+U | `U` | Kill entire line |
+| Ctrl+K | `K` | Kill to end of line |
+| Ctrl+W | `W` | Kill previous word |
+| Ctrl+R | `R` | Reverse history search |
+
+Keys sent via `send_text` (escape sequences for TUI/REPL navigation):
+
+| Key | `text` value | Use case |
+|-----|-------------|----------|
+| Up Arrow | `\x1b[A` | Navigate history, TUI menu up |
+| Down Arrow | `\x1b[B` | TUI menu down |
+| Right Arrow | `\x1b[C` | Cursor right |
+| Left Arrow | `\x1b[D` | Cursor left |
+| Tab | `\t` | Autocomplete |
+| Enter (TUI) | `\r` | Submit in TUI (use `press_enter=true` instead for normal input) |
+| Backspace | `\x7f` | Delete character |
+
+Example — navigate a TUI menu down 3 items and select:
+```
+1. send_text(text="\x1b[B")     → down
+2. send_text(text="\x1b[B")     → down
+3. send_text(text="\x1b[B")     → down
+4. send_text(text="\r")         → select
+```
+
+## iTerm2 Object Hierarchy
+
+```
+App → Window → Tab → Session (pane)
+```
+
+- **App**: The iTerm2 application. One per machine.
+- **Window**: A visible window. Can contain multiple tabs.
+- **Tab**: A tab within a window. Can contain multiple sessions (split panes).
+- **Session**: A single terminal pane. This is what you interact with. Each session has a unique `session_id`.
+
+When you call `manage_session(action="list")`, the returned list shows all sessions across all windows/tabs.
+
 ## Workflow Recipes
 
 ### 1. Run a command and get output
@@ -124,6 +175,28 @@ ALWAYS call `read_screen()` before taking action. This tells you:
 5. send_control(character="D")                             → exit REPL (Ctrl+D)
 ```
 
+### 6. Create a 4-pane dev layout
+```
+1. manage_session(action="split", direction="horizontal")  → bottom pane (id_B)
+2. manage_session(action="split", direction="vertical")    → split original → right pane (id_C)
+3. manage_session(action="split", direction="vertical", session_id=id_B) → bottom-right (id_D)
+4. run_command(command="npm run dev", session_id=id_A)     → server (top-left)
+5. run_command(command="npm test -- --watch", session_id=id_C) → tests (top-right)
+6. send_text(text="tail -f logs/app.log", press_enter=true, session_id=id_B) → logs (bottom-left)
+7. run_command(command="psql", session_id=id_D)            → database (bottom-right)
+```
+
+### 7. Multi-level cleanup (stop TUI / exit shell)
+When a session is stuck in a TUI or process:
+```
+1. send_control(character="C")          → interrupt process
+2. read_screen()                        → check state
+3. send_text(text="q")                  → TUI quit key (if still in TUI)
+4. read_screen()                        → check state
+5. send_text(text="exit", press_enter=true) → exit shell/REPL
+6. manage_session(action="close", session_id="...") → close pane if needed
+```
+
 ## Session ID Guidance
 
 - **Omit `session_id`** (or pass `""`) to target the currently active session. This is the default and works for single-pane workflows.
@@ -146,3 +219,18 @@ ALWAYS call `read_screen()` before taking action. This tells you:
 | Wrong session targeted | Use `manage_session(action="list")` to see all sessions and their IDs. |
 | Screen content looks stale | Call `read_screen()` again — screen updates are async. |
 | Interactive prompt waiting | The program expects input. Use `send_text` to provide it, or `send_control(character="C")` to abort. |
+| MCP server not connected | Check `~/.claude.json` has the `iterm2-agent` entry. Restart Claude Code. |
+| Tool not found | The MCP server isn't registered or failed to start. Verify the virtualenv path in `~/.claude.json` is correct. |
+
+## Debugging Tips
+
+- **Always dump screen on unexpected results.** Call `read_screen()` after every failed or unclear operation.
+- **Use `read_screen(lines=50)` for full context.** The default returns all visible lines, but specifying more can show scrollback.
+- **Check for TUI artifacts.** Box-drawing characters (`┌─┐│└─┘`) indicate a TUI is still open — don't send shell commands.
+- **Watch for shell prompts.** A line ending with `$` or `%` means the shell is idle and ready for commands.
+- **Session IDs are stable.** A session ID doesn't change until the pane is closed. You can safely reuse IDs across multiple tool calls.
+
+## Links
+
+- [iTerm2 Python API documentation](https://iterm2.com/python-api/)
+- [iterm2-agent GitHub repository](https://github.com/xjthy001/iterm2-agent)
