@@ -9,14 +9,15 @@ Read the screen, run commands, send keystrokes, monitor output, and manage panes
 - macOS with [iTerm2](https://iterm2.com/) installed
 - iTerm2 Python API enabled: **Preferences → General → Magic → Enable Python API**
 - Python 3.11+
+- [uv](https://docs.astral.sh/uv/) (`brew install uv`)
 
 ## Install
 
 ```bash
-cd /path/to/iterm2-agent
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .
+git clone git@github.com:xjthy001/iterm2-agent.git
+cd iterm2-agent
+uv venv
+uv pip install -e .
 ```
 
 ## Tools
@@ -111,7 +112,7 @@ direction: str = "horizontal"  # horizontal | vertical (split only)
 
 ### 1. Register the MCP server
 
-Add to `~/.claude.json`:
+Add the `iterm2-agent` entry to the `mcpServers` object in `~/.claude.json`:
 
 ```json
 {
@@ -125,18 +126,24 @@ Add to `~/.claude.json`:
 }
 ```
 
-### 2. Install the Claude Code skill
+Replace `/path/to/iterm2-agent` with your actual clone path. The command must point to the Python binary inside the project's virtualenv so that dependencies are available.
 
-Copy the skill into your Claude Code skills directory:
+> If `~/.claude.json` already has a `mcpServers` object, just add the `"iterm2-agent": { ... }` entry alongside existing servers. Don't overwrite the whole file.
+
+Restart Claude Code after editing. The server connects to iTerm2 on startup — make sure iTerm2 is running and the Python API is enabled.
+
+### 2. Install the Claude Code skill (optional)
+
+The skill gives Claude a built-in reference for how to use the 6 tools effectively:
 
 ```bash
 mkdir -p ~/.claude/skills/iterm2
 cp skill/SKILL.md ~/.claude/skills/iterm2/SKILL.md
 ```
 
-This gives Claude a reference guide for how to use the tools effectively. Invoke it with `/iterm2` or let it auto-activate when you mention terminal/iTerm2.
+After installing, you can invoke it with `/iterm2` or it auto-activates when you mention terminal/iTerm2.
 
-### 3. Use it
+### 3. Verify
 
 Start a new Claude Code session and try:
 
@@ -215,15 +222,14 @@ iterm2-agent/
 Unit tests (no iTerm2 required):
 
 ```bash
-source .venv/bin/activate
-pip install pytest pytest-asyncio
-pytest
+uv pip install pytest pytest-asyncio
+uv run pytest
 ```
 
 Live integration tests (requires iTerm2 running):
 
 ```bash
-python test_integration.py
+uv run python test_integration.py
 ```
 
 ## License
