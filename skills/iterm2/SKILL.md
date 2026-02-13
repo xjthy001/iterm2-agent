@@ -15,10 +15,48 @@ Control iTerm2 sessions via the `iterm2-agent` MCP server. All tool names are pr
 
 Before using any tool, verify both conditions are met:
 
-1. **iTerm2 must be running** with at least one open window. The Python API must be enabled: **Preferences → General → Magic → Enable Python API**.
-2. **The `iterm2-agent` MCP server must be installed and registered** in `~/.claude.json`. See the [README](https://github.com/xjthy001/iterm2-agent) for setup.
+### 1. iTerm2 must be running
 
-If a tool call fails with a connection error, ask the user to check that iTerm2 is open and the MCP server is configured.
+- iTerm2 app must be open with at least one terminal window.
+- The Python API must be enabled. Check: **iTerm2 → Settings → General → Magic → Enable Python API** (checkbox must be on).
+- How to verify: if `mcp__iterm2-agent__read_screen` returns a connection error, iTerm2 is either not running or the Python API is disabled. Ask the user to:
+  1. Open iTerm2
+  2. Go to **iTerm2 → Settings → General → Magic**
+  3. Check **Enable Python API**
+  4. Restart Claude Code (the MCP server connects on startup)
+
+### 2. The `iterm2-agent` MCP server must be installed and registered
+
+The MCP server must be cloned, installed, and registered in `~/.claude.json`. How to check:
+
+1. **Is the repo cloned and dependencies installed?** Look for the virtualenv at the clone path:
+   ```bash
+   ls /path/to/iterm2-agent/.venv/bin/python
+   ```
+   If missing, install:
+   ```bash
+   git clone git@github.com:xjthy001/iterm2-agent.git
+   cd iterm2-agent
+   uv venv && uv pip install -e .
+   ```
+
+2. **Is it registered in `~/.claude.json`?** The file must contain an `iterm2-agent` entry under `mcpServers`:
+   ```json
+   {
+     "mcpServers": {
+       "iterm2-agent": {
+         "type": "stdio",
+         "command": "/path/to/iterm2-agent/.venv/bin/python",
+         "args": ["-m", "iterm2_agent"]
+       }
+     }
+   }
+   ```
+   Replace `/path/to/iterm2-agent` with the actual clone path. If `mcpServers` already has other entries, add `iterm2-agent` alongside them.
+
+3. **Restart Claude Code** after editing `~/.claude.json` — the MCP server connects at session startup.
+
+If a tool call fails with a connection error after both checks pass, ask the user to restart Claude Code.
 
 ## Core Principle: Read Before You Act
 
