@@ -1,0 +1,16 @@
+[server]
+name = "iterm2-agent"
+version = "0.1.0"
+transport = "stdio"
+
+[security]
+# Dangerous commands produce warnings but are not blocked
+warn_on_dangerous = true
+
+[timeouts]
+# Default timeout for run_command (seconds)
+command = 30
+# Default timeout for watch_output (seconds)
+watch = 60
+# Idle cycles before declaring command complete
+idle_threshold = 2
